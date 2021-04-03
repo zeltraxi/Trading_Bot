@@ -47,7 +47,7 @@ usdtwallet = usdt.loc[1,"wallet"]
 usdtwallet = float(usdtwallet)
 
 #Get Date
-yesterday = datetime.now() - timedelta(1)
+yesterday = datetime.now() - timedelta(7)
 date = yesterday.strftime("%d %B, %Y") 
 
 #RSI 4 Hours Historic if you want to see trends and patterns
@@ -94,14 +94,14 @@ histoeth6 = histoeth6[["Date","Close","Open","High","rsi_6","macd","DiffRSI","Di
 #print(histoeth6[["Date","Close","rsi_6","macd","DiffRSI","DiffMACD"]].tail())
 
 #Check If Limit Order on ETH USDT Pair
-orders = client.get_all_orders(symbol='ETHUSDT', limit=4)
+orders = client.get_all_orders(symbol='ETHUSDT', limit=10)
 orders = pd.DataFrame(orders)
 orderstype = orders[(orders["type"] == "LIMIT") & (orders["status"] != "CANCELED") & (orders["side"] == "SELL")]
 
 #BOT ACTION
 #BUY IF
 # TREND MACD UP AND DIFF RSI < -15 AND RSI < 70
-if histoeth6.iloc[-1,-1] in ['MACDUP']  and histoeth6.iloc[-1,-2] < -15 and histoeth6.iloc[-1,-4] < 70 : 
+if histoeth6.iloc[-1,-1] in ['MACDUP']  and histoeth6.iloc[-1,-2] < -15 and histoeth6.iloc[-1,-4] < 60 : 
     #Set Stop Loss
     client.create_order(
         symbol="ETHUSDT",
