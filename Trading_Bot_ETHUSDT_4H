@@ -100,8 +100,8 @@ orderstype = orders[(orders["type"] == "LIMIT") & (orders["status"] != "CANCELED
 
 #BOT ACTION
 #BUY IF
-# TREND MACD UP AND DIFF RSI < -15 AND RSI < 70
-if histoeth6.iloc[-1,-1] in ['MACDUP']  and histoeth6.iloc[-1,-2] < -15 and histoeth6.iloc[-1,-4] < 60 : 
+# TREND MACD UP AND DIFF RSI < -15 AND RSI < 65
+if histoeth6.iloc[-1,-1] in ['MACDUP']  and histoeth6.iloc[-1,-2] < -15 and histoeth6.iloc[-1,-4] < 65 : 
     #Set Stop Loss
     client.create_order(
         symbol="ETHUSDT",
@@ -117,7 +117,7 @@ if histoeth6.iloc[-1,-1] in ['MACDUP']  and histoeth6.iloc[-1,-2] < -15 and hist
         symbol='ETHUSDT',
         quantity=usdtwallet*0.1)
 # TREND MACD UP AND DIFF RSI < -15 AND RSI < 70
-elif histoeth6.iloc[-1,-1] in ['MACDDOWN'] and histoeth6.iloc[-1,-2] < - 10 and histoeth6.iloc[-1,-4] > 30 :
+elif histoeth6.iloc[-1,-1] in ['MACDDOWN'] and histoeth6.iloc[-1,-2] < - 10 and histoeth6.iloc[-1,-4] < 35 :
     #Set Stop Loss
     client.create_order(
         symbol="ETHUSDT",
@@ -177,8 +177,8 @@ elif histoeth6.iloc[-1,-1] in ['MACDDOWN'] and histoeth6.iloc[-1,-2] > 15 and hi
     client.order_market_sell(
         symbol='ETHUSDT',
         quantity=ethwallet*0.1)
-#MACD UP diffRSI > 10 & RSI < 70
-elif histoeth6.iloc[-1,-1] in ['MACDUP'] and histoeth6.iloc[-1,-2] > 10 and histoeth6.iloc[-1,-4] < 70 :
+#MACD UP diffRSI > 10 & RSI > 70
+elif histoeth6.iloc[-1,-1] in ['MACDUP'] and histoeth6.iloc[-1,-2] > 10 and histoeth6.iloc[-1,-4] > 70 :
     #Cancel Limit Order
     if not orderstype.empty:
     i=0
