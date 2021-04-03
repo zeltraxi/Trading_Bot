@@ -170,9 +170,9 @@ elif histoeth6.iloc[-1,-4] < 15 and histoeth6.iloc[-1,-4] < histoeth6.iloc[-2,-4
 elif histoeth6.iloc[-1,-1] in ['MACDDOWN'] and histoeth6.iloc[-1,-2] > 15 and histoeth6.iloc[-1,-4] > 30 :
     #Cancel Limit Order
     if not orderstype.empty:
-    i=0
-    for i in orderstype:
-        client.cancel_order(symbol="ETHUSDT",orderId=orderstype.iloc[i,1])
+        i=0
+        for i in orderstype:
+            client.cancel_order(symbol="ETHUSDT",orderId=orderstype.iloc[i,1])
     #Do Market Order
     client.order_market_sell(
         symbol='ETHUSDT',
@@ -181,9 +181,9 @@ elif histoeth6.iloc[-1,-1] in ['MACDDOWN'] and histoeth6.iloc[-1,-2] > 15 and hi
 elif histoeth6.iloc[-1,-1] in ['MACDUP'] and histoeth6.iloc[-1,-2] > 10 and histoeth6.iloc[-1,-4] > 70 :
     #Cancel Limit Order
     if not orderstype.empty:
-    i=0
-    for i in orderstype:
-        client.cancel_order(symbol="ETHUSDT",orderId=orderstype.iloc[i,1])
+        i=0
+        for i in orderstype:
+            client.cancel_order(symbol="ETHUSDT",orderId=orderstype.iloc[i,1])
     #Do Market Order
     client.order_market_sell(
         symbol='ETHUSDT',
@@ -192,9 +192,9 @@ elif histoeth6.iloc[-1,-1] in ['MACDUP'] and histoeth6.iloc[-1,-2] > 10 and hist
 elif histoeth6.iloc[-1,-4] > 85 and histoeth6.iloc[-1,-4] > histoeth6.iloc[-2,-4] : 
     #Cancel Limit Order
     if not orderstype.empty:
-    i=0
-    for i in orderstype:
-        client.cancel_order(symbol="ETHUSDT",orderId=orderstype.iloc[i,1])
+        i=0
+        for i in orderstype:
+            client.cancel_order(symbol="ETHUSDT",orderId=orderstype.iloc[i,1])
     #Do Market Order
     client.order_market_sell(
         symbol='ETHUSDT',
@@ -203,9 +203,9 @@ elif histoeth6.iloc[-1,-4] > 85 and histoeth6.iloc[-1,-4] > histoeth6.iloc[-2,-4
 elif histoeth6.iloc[-1,-4] > 90 and histoeth6.iloc[-1,-4] > histoeth6.iloc[-2,-4]: 
     #Cancel Limit Order
     if not orderstype.empty:
-    i=0
-    for i in orderstype:
-        client.cancel_order(symbol="ETHUSDT",orderId=orderstype.iloc[i,1])
+        i=0
+        for i in orderstype:
+            client.cancel_order(symbol="ETHUSDT",orderId=orderstype.iloc[i,1])
     #Do Market Order
     client.order_market_sell(
         symbol='ETHUSDT',
