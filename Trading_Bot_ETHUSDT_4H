@@ -1,0 +1,145 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Apr  2 19:12:56 2021
+
+@author: guillaume.niay
+"""
+
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Apr  1 14:28:52 2021
+
+@author: guillaume.niay
+"""
+
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Mar 31 19:40:46 2021
+
+@author: guillaume.niay
+"""
+#LIBRARY 
+from binance.client import Client
+import urllib3
+import pandas as pd
+from binance.enums import *
+from ta.momentum import RSIIndicator
+from ta.trend import macd_signal
+
+#API BINANCE ACCESS
+publicapi='YOUR PUBLIC API KEY'
+secretapi = 'YOUR SECRET API KEY'
+urllib3.disable_warnings()
+client = Client(publicapi, secretapi,{"verify": False, "timeout": 20})
+
+#ACCOUNT INFO
+info = client.get_account()
+
+#Wallet ON ETH/USDT PAIR
+eth = client.get_asset_balance(asset='ETH')
+eth = pd.DataFrame(eth.items(), columns=['asset', 'wallet']) #,columns = ["Asset","Wallet","Locked"]
+usdt = client.get_asset_balance(asset='USDT')
+usdt = pd.DataFrame(usdt.items(), columns=['asset', 'wallet'])
+ethwallet = eth.loc[1,"wallet"]
+ethwallet = float(ethwallet)
+usdtwallet = usdt.loc[1,"wallet"]
+usdtwallet = float(usdtwallet)
+
+#RSI 4 Hours Historic if you want to see trends and patterns
+histoeth = client.get_historical_klines("ETHUSDT", Client.KLINE_INTERVAL_4HOUR, "1 MAR, 2021")
+for line in histoeth:
+    del line[5:]
+    
+#INTO DATAFRAME    
+histoeth = pd.DataFrame(histoeth,columns = ["Date","Open","High","Low","Close"])
+#CONVERT TYPE
+histoeth["Date"] = pd.to_datetime(histoeth["Date"][:],unit='ms')
+histoeth["Open"] = pd.to_numeric(histoeth["Open"],errors = 'coerce')
+histoeth["High"] = pd.to_numeric(histoeth["High"],errors = 'coerce')
+histoeth["Low"] = pd.to_numeric(histoeth["Low"],errors = 'coerce')
+histoeth["Close"] = pd.to_numeric(histoeth["Close"],errors = 'coerce')
+
+#MACD
+histoeth["macd"] = macd_signal(histoeth.Close, window_slow = 26, window_fast = 12)
+
+#RSI Daily 6 Period
+rsi_6 = RSIIndicator(close = histoeth.Close, window = 6)
+histoeth["rsi_6"] = rsi_6.rsi()
+diffrsi = [0]
+diffmacd = ['MACD']
+line = 34
+while (line < len(histoeth)):
+    #DIFF RSI
+    diffrsi.append(histoeth.iloc[line,-1] - histoeth.iloc[line-1,-1])
+    #TREND MACD
+    diff = histoeth.iloc[line,-2] - histoeth.iloc[line-1,-2]
+    if diff > 0:
+        diffmacd.append("MACDUP")
+    else:
+        diffmacd.append("MACDDOWN")
+    
+    line = line + 1
+    
+histoeth6 = histoeth.dropna()
+histoeth6["DiffRSI"] = diffrsi
+histoeth6["DiffMACD"] = diffmacd
+histoeth6 = histoeth6[["Date","Close","Open","High","rsi_6","macd","DiffRSI","DiffMACD"]]
+#ethwalletqty =  round(usdtwallet / histoeth6.iloc[-1,1],5)
+#usdtwalletqty = round(ethwallet * histoeth6.iloc[-1,1] ,5)
+#print(histoeth6[["Date","Close","rsi_6","macd","DiffRSI","DiffMACD"]].tail())
+
+#BOT ACTION
+#BUY IF
+# TREND MACD UP AND DIFF RSI < -15 AND RSI < 70
+if histoeth6.iloc[-1,-1] in ['MACDUP']  and histoeth6.iloc[-1,-2] < -15 and histoeth6.iloc[-1,-4] < 70 : 
+    #Do Market Order
+    client.order_market_buy(
+        symbol='ETHUSDT',
+        quantity=usdtwallet*0.1)
+# TREND MACD UP AND DIFF RSI < -15 AND RSI < 70
+elif histoeth6.iloc[-1,-1] in ['MACDDOWN'] and histoeth6.iloc[-1,-2] < - 10 and histoeth6.iloc[-1,-4] > 30 : 
+    #Do Market Order
+    client.order_market_buy(
+        symbol='ETHUSDT',
+        quantity=usdtwallet*0.1)
+# RSI < 20 and rsi < rsi - 1
+elif histoeth6.iloc[-1,-4] < 20 and histoeth6.iloc[-1,-4] < histoeth6.iloc[-2,-4] : 
+    #Do Market Order
+    client.order_market_buy(
+        symbol='ETHUSDT',
+        quantity=usdtwallet*0.25)
+# RSI < 15 and rsi < rsi - 1
+elif histoeth6.iloc[-1,-4] < 15 and histoeth6.iloc[-1,-4] < histoeth6.iloc[-2,-4] : 
+    #Do Market Order
+    client.order_market_buy(
+        symbol='ETHUSDT',
+        quantity=usdtwallet*0.5)
+#SELL IF 
+#MACD DOWN  diffRSI > + 15 & RSI > 30 
+elif histoeth6.iloc[-1,-1] in ['MACDDOWN'] and histoeth6.iloc[-1,-2] > 15 and histoeth6.iloc[-1,-4] > 30 :  
+    #Do Market Order
+    client.order_market_sell(
+        symbol='ETHUSDT',
+        quantity=ethwallet*0.1)
+#MACD UP diffRSI > 10 & RSI < 70
+elif histoeth6.iloc[-1,-1] in ['MACDUP'] and histoeth6.iloc[-1,-2] > 10 and histoeth6.iloc[-1,-4] < 70 :  
+    #Do Market Order
+    client.order_market_sell(
+        symbol='ETHUSDT',
+        quantity=ethwallet*0.1)
+# RSI > 85 and rsi > rsi - 1
+elif histoeth6.iloc[-1,-4] > 85 and histoeth6.iloc[-1,-4] > histoeth6.iloc[-2,-4] : 
+    #Do Market Order
+    client.order_market_sell(
+        symbol='ETHUSDT',
+        quantity=ethwallet*0.25)
+ # RSI > 90 and rsi > rsi - 1
+elif histoeth6.iloc[-1,-4] > 90 and histoeth6.iloc[-1,-4] > histoeth6.iloc[-2,-4]: 
+    #Do Market Order
+    client.order_market_sell(
+        symbol='ETHUSDT',
+        quantity=ethwallet*0.5)   
+
+
+
+
