@@ -25,6 +25,7 @@ import pandas as pd
 from binance.enums import *
 from ta.momentum import RSIIndicator
 from ta.trend import macd_signal
+from datetime import datetime,timedelta
 
 #API BINANCE ACCESS
 publicapi='YOUR PUBLIC API KEY'
@@ -45,8 +46,12 @@ ethwallet = float(ethwallet)
 usdtwallet = usdt.loc[1,"wallet"]
 usdtwallet = float(usdtwallet)
 
+#Get Date
+yesterday = datetime.now() - timedelta(1)
+date = yesterday.strftime("%d %B, %Y") 
+
 #RSI 4 Hours Historic if you want to see trends and patterns
-histoeth = client.get_historical_klines("ETHUSDT", Client.KLINE_INTERVAL_4HOUR, "1 MAR, 2021")
+histoeth = client.get_historical_klines("ETHUSDT", Client.KLINE_INTERVAL_4HOUR, date)
 for line in histoeth:
     del line[5:]
     
