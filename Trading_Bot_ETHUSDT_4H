@@ -88,53 +88,119 @@ histoeth6 = histoeth6[["Date","Close","Open","High","rsi_6","macd","DiffRSI","Di
 #usdtwalletqty = round(ethwallet * histoeth6.iloc[-1,1] ,5)
 #print(histoeth6[["Date","Close","rsi_6","macd","DiffRSI","DiffMACD"]].tail())
 
+#Check If Limit Order on ETH USDT Pair
+orders = client.get_all_orders(symbol='ETHUSDT', limit=4)
+orders = pd.DataFrame(orders)
+orderstype = orders[(orders["type"] == "LIMIT") & (orders["status"] != "CANCELED") & (orders["side"] == "SELL")]
+
 #BOT ACTION
 #BUY IF
 # TREND MACD UP AND DIFF RSI < -15 AND RSI < 70
 if histoeth6.iloc[-1,-1] in ['MACDUP']  and histoeth6.iloc[-1,-2] < -15 and histoeth6.iloc[-1,-4] < 70 : 
+    #Set Stop Loss
+    client.create_order(
+        symbol="ETHUSDT",
+        side = "SELL",
+        type="STOP_LOSS_LIMIT",
+        timeInForce ='GTC',
+        quantity=round(usdtwallet*0.1,5),
+        price = round(histoeth6.iloc[-1,1]*0.949,3),
+        stopPrice= round(histoeth6.iloc[-1,1]*0.95,3)
+        )
     #Do Market Order
     client.order_market_buy(
         symbol='ETHUSDT',
         quantity=usdtwallet*0.1)
 # TREND MACD UP AND DIFF RSI < -15 AND RSI < 70
-elif histoeth6.iloc[-1,-1] in ['MACDDOWN'] and histoeth6.iloc[-1,-2] < - 10 and histoeth6.iloc[-1,-4] > 30 : 
+elif histoeth6.iloc[-1,-1] in ['MACDDOWN'] and histoeth6.iloc[-1,-2] < - 10 and histoeth6.iloc[-1,-4] > 30 :
+    #Set Stop Loss
+    client.create_order(
+        symbol="ETHUSDT",
+        side = "SELL",
+        type="STOP_LOSS_LIMIT",
+        timeInForce ='GTC',
+        quantity=round(usdtwallet*0.1,5),
+        price = round(histoeth6.iloc[-1,1]*0.949,3),
+        stopPrice= round(histoeth6.iloc[-1,1]*0.95,3)
+        )
     #Do Market Order
     client.order_market_buy(
         symbol='ETHUSDT',
         quantity=usdtwallet*0.1)
 # RSI < 20 and rsi < rsi - 1
 elif histoeth6.iloc[-1,-4] < 20 and histoeth6.iloc[-1,-4] < histoeth6.iloc[-2,-4] : 
+    #Set Stop Loss
+    client.create_order(
+        symbol="ETHUSDT",
+        side = "SELL",
+        type="STOP_LOSS_LIMIT",
+        timeInForce ='GTC',
+        quantity=round(usdtwallet*0.1,5),
+        price = round(histoeth6.iloc[-1,1]*0.949,3),
+        stopPrice= round(histoeth6.iloc[-1,1]*0.95,3)
+        )
     #Do Market Order
     client.order_market_buy(
         symbol='ETHUSDT',
         quantity=usdtwallet*0.25)
 # RSI < 15 and rsi < rsi - 1
 elif histoeth6.iloc[-1,-4] < 15 and histoeth6.iloc[-1,-4] < histoeth6.iloc[-2,-4] : 
+    #Set Stop Loss
+    client.create_order(
+        symbol="ETHUSDT",
+        side = "SELL",
+        type="STOP_LOSS_LIMIT",
+        timeInForce ='GTC',
+        quantity=round(usdtwallet*0.1,5),
+        price = round(histoeth6.iloc[-1,1]*0.949,3),
+        stopPrice= round(histoeth6.iloc[-1,1]*0.95,3)
+        )
     #Do Market Order
     client.order_market_buy(
         symbol='ETHUSDT',
         quantity=usdtwallet*0.5)
+        
 #SELL IF 
 #MACD DOWN  diffRSI > + 15 & RSI > 30 
-elif histoeth6.iloc[-1,-1] in ['MACDDOWN'] and histoeth6.iloc[-1,-2] > 15 and histoeth6.iloc[-1,-4] > 30 :  
+elif histoeth6.iloc[-1,-1] in ['MACDDOWN'] and histoeth6.iloc[-1,-2] > 15 and histoeth6.iloc[-1,-4] > 30 :
+    #Cancel Limit Order
+    if not orderstype.empty:
+    i=0
+    for i in orderstype:
+        client.cancel_order(symbol="ETHUSDT",orderId=orderstype.iloc[i,1])
     #Do Market Order
     client.order_market_sell(
         symbol='ETHUSDT',
         quantity=ethwallet*0.1)
 #MACD UP diffRSI > 10 & RSI < 70
-elif histoeth6.iloc[-1,-1] in ['MACDUP'] and histoeth6.iloc[-1,-2] > 10 and histoeth6.iloc[-1,-4] < 70 :  
+elif histoeth6.iloc[-1,-1] in ['MACDUP'] and histoeth6.iloc[-1,-2] > 10 and histoeth6.iloc[-1,-4] < 70 :
+    #Cancel Limit Order
+    if not orderstype.empty:
+    i=0
+    for i in orderstype:
+        client.cancel_order(symbol="ETHUSDT",orderId=orderstype.iloc[i,1])
     #Do Market Order
     client.order_market_sell(
         symbol='ETHUSDT',
         quantity=ethwallet*0.1)
 # RSI > 85 and rsi > rsi - 1
 elif histoeth6.iloc[-1,-4] > 85 and histoeth6.iloc[-1,-4] > histoeth6.iloc[-2,-4] : 
+    #Cancel Limit Order
+    if not orderstype.empty:
+    i=0
+    for i in orderstype:
+        client.cancel_order(symbol="ETHUSDT",orderId=orderstype.iloc[i,1])
     #Do Market Order
     client.order_market_sell(
         symbol='ETHUSDT',
         quantity=ethwallet*0.25)
  # RSI > 90 and rsi > rsi - 1
 elif histoeth6.iloc[-1,-4] > 90 and histoeth6.iloc[-1,-4] > histoeth6.iloc[-2,-4]: 
+    #Cancel Limit Order
+    if not orderstype.empty:
+    i=0
+    for i in orderstype:
+        client.cancel_order(symbol="ETHUSDT",orderId=orderstype.iloc[i,1])
     #Do Market Order
     client.order_market_sell(
         symbol='ETHUSDT',
