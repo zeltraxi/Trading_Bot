@@ -109,8 +109,8 @@ if histoeth6.iloc[-1,-1] in ['MACDUP']  and histoeth6.iloc[-1,-2] < -15 and hist
         type="STOP_LOSS_LIMIT",
         timeInForce ='GTC',
         quantity=round(usdtwallet*0.1,5),
-        price = round(histoeth6.iloc[-1,1]*0.949,3),
-        stopPrice= round(histoeth6.iloc[-1,1]*0.95,3)
+        price = round(histoeth6.iloc[-1,1]*0.949,5),
+        stopPrice= round(histoeth6.iloc[-1,1]*0.95,5)
         )
     #Do Market Order
     client.order_market_buy(
@@ -125,8 +125,8 @@ elif histoeth6.iloc[-1,-1] in ['MACDDOWN'] and histoeth6.iloc[-1,-2] < - 10 and 
         type="STOP_LOSS_LIMIT",
         timeInForce ='GTC',
         quantity=round(usdtwallet*0.1,5),
-        price = round(histoeth6.iloc[-1,1]*0.949,3),
-        stopPrice= round(histoeth6.iloc[-1,1]*0.95,3)
+        price = round(histoeth6.iloc[-1,1]*0.949,5),
+        stopPrice= round(histoeth6.iloc[-1,1]*0.95,5)
         )
     #Do Market Order
     client.order_market_buy(
@@ -141,8 +141,8 @@ elif histoeth6.iloc[-1,-4] < 20 and histoeth6.iloc[-1,-4] < histoeth6.iloc[-2,-4
         type="STOP_LOSS_LIMIT",
         timeInForce ='GTC',
         quantity=round(usdtwallet*0.1,5),
-        price = round(histoeth6.iloc[-1,1]*0.949,3),
-        stopPrice= round(histoeth6.iloc[-1,1]*0.95,3)
+        price = round(histoeth6.iloc[-1,1]*0.949,5),
+        stopPrice= round(histoeth6.iloc[-1,1]*0.95,5)
         )
     #Do Market Order
     client.order_market_buy(
@@ -157,8 +157,8 @@ elif histoeth6.iloc[-1,-4] < 15 and histoeth6.iloc[-1,-4] < histoeth6.iloc[-2,-4
         type="STOP_LOSS_LIMIT",
         timeInForce ='GTC',
         quantity=round(usdtwallet*0.1,5),
-        price = round(histoeth6.iloc[-1,1]*0.949,3),
-        stopPrice= round(histoeth6.iloc[-1,1]*0.95,3)
+        price = round(histoeth6.iloc[-1,1]*0.949,5),
+        stopPrice= round(histoeth6.iloc[-1,1]*0.95,5)
         )
     #Do Market Order
     client.order_market_buy(
